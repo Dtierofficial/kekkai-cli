@@ -125,4 +125,9 @@ func plaintextCSV(path string, entries []vault.Entry) error {
 	return w.Error()
 }
 
-func cleanTransferPath(path string) string { return filepath.Clean(strings.TrimSpace(path)) }
+// cleanTransferPath normalizes user input for os.Open. Explorer's
+// "Copy as path" wraps the whole path in quotes, so stray quote characters
+// must be stripped before use.
+func cleanTransferPath(path string) string {
+	return filepath.Clean(strings.TrimSpace(strings.Trim(strings.TrimSpace(path), `"'`)))
+}

@@ -119,8 +119,9 @@ func add(path, service, login string) error {
 	}
 	defer vault.Zero(pass)
 	for _, e := range entries {
-		if e.Service == service {
-			return errors.New("service already exists")
+		// Same pair as the TUI: one service may hold several logins.
+		if e.Service == service && e.Login == login {
+			return errors.New("entry already exists")
 		}
 	}
 	entries = append(entries, vault.Entry{Service: service, Login: login, Password: pass})

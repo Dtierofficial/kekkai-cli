@@ -255,6 +255,15 @@ func TestImportForeignCSVFormat(t *testing.T) {
 	if len(m2.entries) != 2 {
 		t.Fatalf("failed import changed entries: %d", len(m2.entries))
 	}
+	// A quoted path (Explorer "Copy as path") must import too: re-importing
+	// foreign.csv yields 0 new entries (all duplicates).
+	m4 := &tuiModel{path: path, master: append([]byte(nil), master...), entries: m.entries, mode: modeList}
+	driveToSettings(t, m4, 4)
+	typeRunes(m4, `"foreign.csv"`)
+	m4.Update(tea.KeyMsg{Type: tea.KeyEnter})
+	if !strings.Contains(m4.status, "Imported 0 entries") {
+		t.Fatalf("quoted path was not accepted: %q", m4.status)
+	}
 }
 
 // TestImportRejectsOversizedCSV ensures a CSV beyond the entry cap fails

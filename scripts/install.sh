@@ -33,6 +33,36 @@ TMP_FILE=$(mktemp "${TMPDIR:-/tmp}/kekkai.XXXXXX")
 trap 'rm -f "$TMP_FILE"' EXIT HUP INT TERM
 curl -fsSL -H 'User-Agent: kekkai-installer' "$ASSET_URL" -o "$TMP_FILE"
 
+# Verify the binary against the release checksum manifest (SHA256SUMS.txt).
+# A manifest that cannot be fetched only produces a warning; a fetched
+# manifest that does not match is a hard failure.
+ASSET_NAME=$(basename "$ASSET_URL")
+SUMS_URL="https://github.com/$REPO/releases/latest/download/SHA256SUMS.txt"
+if SUMS=$(curl -fsSL -H 'User-Agent: kekkai-installer' "$SUMS_URL" 2>/dev/null); then
+  EXPECTED=$(printf '%s\n' "$SUMS" | grep -F "  $ASSET_NAME" | awk '{print $1}' | head -n 1)
+  if [ -n "$EXPECTED" ]; then
+    ACTUAL=''
+    if command -v sha256sum >/dev/null 2>&1; then
+      ACTUAL=$(sha256sum "$TMP_FILE" | awk '{print $1}')
+    elif command -v shasum >/dev/null 2>&1; then
+      ACTUAL=$(shasum -a 256 "$TMP_FILE" | awk '{print $1}')
+    else
+      printf '%s\n' 'No sha256sum/shasum available; skipping checksum verification.' >&2
+    fi
+    if [ -n "$ACTUAL" ] && [ "$ACTUAL" != "$EXPECTED" ]; then
+      printf '%s\n' 'SHA256 checksum mismatch: the downloaded binary is corrupted or has been tampered with.' >&2
+      exit 1
+    fi
+    if [ -n "$ACTUAL" ]; then
+      printf '%s\n' 'Checksum verified.'
+    fi
+  else
+    printf '%s\n' 'Checksum manifest did not contain this asset; skipping verification.' >&2
+  fi
+else
+  printf '%s\n' 'Could not fetch SHA256SUMS.txt; skipping checksum verification.' >&2
+fi
+
 TARGET_DIR='/usr/local/bin'
 if [ -d "$TARGET_DIR" ] && [ -w "$TARGET_DIR" ]; then
   install -m 0755 "$TMP_FILE" "$TARGET_DIR/kekkai"
