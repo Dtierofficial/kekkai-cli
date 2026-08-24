@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 	"unicode/utf8"
@@ -339,6 +341,76 @@ func TestBackspaceTrimsWholeRunes(t *testing.T) {
 	}
 	if !utf8.ValidString(p.transferPath) {
 		t.Fatalf("transfer path contains invalid UTF-8: %q", p.transferPath)
+	}
+}
+
+// TestCtrlCQuitsFromEveryMode pins the emergency exit: Ctrl+C must quit
+// from any screen, not only from the list and login (forms, settings,
+// confirmations and import used to swallow it).
+func TestCtrlCQuitsFromEveryMode(t *testing.T) {
+	modes := []tuiMode{modeLogin, modeList, modeAdd, modeConfirmDelete, modeSettings, modeImport, modeUnsafeExport}
+	for _, mode := range modes {
+		m := &tuiModel{mode: mode, entries: []vault.Entry{{Service: "svc", Login: "u", Password: []byte("p")}}, selected: 0}
+		m.Update(tea.KeyMsg{Type: tea.KeyCtrlC})
+		if !m.quitting {
+			t.Fatalf("Ctrl+C did not quit from mode %d", mode)
+		}
+	}
+}
+
+// TestSearchClampsSelectionToVisible ensures a tightened filter moves the
+// cursor onto a visible row instead of leaving it on a hidden entry, whose
+// password would otherwise be revealed by Enter without being on screen.
+func TestSearchClampsSelectionToVisible(t *testing.T) {
+	m := &tuiModel{mode: modeList, entries: []vault.Entry{
+		{Service: "alpha", Login: "u1", Password: []byte("p1")},
+		{Service: "alpine", Login: "u2", Password: []byte("p2")},
+		{Service: "beta", Login: "u3", Password: []byte("p3")},
+	}, selected: 2}
+	m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'/'}})
+	typeRunes(m, "al")
+	if m.selected != 0 {
+		t.Fatalf("cursor stayed on hidden entry: selected=%d", m.selected)
+	}
+	m.Update(tea.KeyMsg{Type: tea.KeyEnter}) // leave search, keep filter
+	m.Update(tea.KeyMsg{Type: tea.KeyEnter}) // reveal
+	if !m.revealed || string(m.entries[m.selected].Password) != "p1" {
+		t.Fatalf("reveal targeted the wrong entry: selected=%d", m.selected)
+	}
+}
+
+// TestImportHandlesExcelBOM ensures a UTF-8 BOM in front of the header
+// (Excel default) does not break column detection.
+func TestImportHandlesExcelBOM(t *testing.T) {
+	tmp := t.TempDir()
+	prevWd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(tmp); err != nil {
+		t.Fatal(err)
+	}
+	defer os.Chdir(prevWd)
+
+	content := "\ufeffname,username,password\nsvc,alice,pw\n"
+	if err := os.WriteFile("bom.csv", []byte(content), 0600); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(tmp, "vault.kek")
+	master := []byte("master-pass")
+	if err := vault.New(path, master); err != nil {
+		t.Fatal(err)
+	}
+
+	m := &tuiModel{path: path, master: append([]byte(nil), master...), entries: nil, mode: modeList}
+	driveToSettings(t, m, 4)
+	typeRunes(m, "bom.csv")
+	m.Update(tea.KeyMsg{Type: tea.KeyEnter})
+	if !strings.Contains(m.status, "Imported 1 entries") {
+		t.Fatalf("BOM broke the import: %q", m.status)
+	}
+	if len(m.entries) != 1 || m.entries[0].Service != "svc" {
+		t.Fatalf("unexpected entries: %#v", m.entries)
 	}
 }
 

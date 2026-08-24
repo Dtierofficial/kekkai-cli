@@ -107,6 +107,8 @@ func interactive() error {
 	vault.Zero(m.master)
 	clearEntries(m.entries)
 	vault.Zero(m.password)
+	vault.Zero(m.totpSecret)
+	vault.Zero(m.newMaster)
 	return err
 }
 
@@ -215,6 +217,12 @@ func (m *tuiModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			msg.Runes = clean
 		}
+		// Ctrl+C quits from any screen: forms, settings and import used to
+		// swallow it, leaving the user without an emergency exit.
+		if msg.Type == tea.KeyCtrlC {
+			m.quitting = true
+			return m, tea.Quit
+		}
 		m.lastActivity = time.Now()
 		m.status = ""
 		// NOTE: keypresses must not invalidate the clipboard session id.
@@ -313,10 +321,12 @@ func (m *tuiModel) key(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			if len(m.search) > 0 {
 				_, n := utf8.DecodeLastRuneInString(m.search)
 				m.search = m.search[:len(m.search)-n]
+				m.clampSelectedToVisible()
 			}
 			return m, nil
 		case tea.KeyRunes:
 			m.search += string(msg.Runes)
+			m.clampSelectedToVisible()
 			return m, nil
 		case tea.KeyUp, tea.KeyDown, tea.KeyCtrlC:
 			// Navigation and interrupt must never be trapped by the search
@@ -1036,6 +1046,21 @@ func (m *tuiModel) visibleIndices() []int {
 		}
 	}
 	return out
+}
+
+// clampSelectedToVisible keeps the cursor on an entry the user can actually
+// see: a tightened filter used to leave it on a hidden row, so Enter would
+// reveal an invisible entry.
+func (m *tuiModel) clampSelectedToVisible() {
+	indices := m.visibleIndices()
+	for _, idx := range indices {
+		if idx == m.selected {
+			return
+		}
+	}
+	if len(indices) > 0 {
+		m.selected = indices[0]
+	}
 }
 func strengthStyle(s string) string {
 	switch s {

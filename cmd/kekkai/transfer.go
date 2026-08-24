@@ -30,6 +30,9 @@ func importCSV(path string, entries []vault.Entry) ([]vault.Entry, int, error) {
 	}
 	cols := make(map[string]int)
 	for i, h := range header {
+		// Excel writes UTF-8 CSVs with a leading BOM; without stripping it
+		// the first column name never matches.
+		h = strings.TrimPrefix(h, "\ufeff")
 		cols[strings.ToLower(strings.TrimSpace(h))] = i
 	}
 	// "service" keeps kekkai's own exports importable, "url"/"name" accept
