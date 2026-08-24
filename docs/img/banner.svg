@@ -1,13 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="820" height="220" viewBox="0 0 820 220" font-family="JetBrains Mono,Cascadia Code,Consolas,'DejaVu Sans Mono',monospace">
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="220" viewBox="0 0 820 220">
   <rect x="1" y="1" width="818" height="218" rx="12" fill="#17131A" stroke="#332a38"/>
-  <g fill="#FF8700" font-weight="bold" font-size="26">
-    <text x="70" y="80">   /\   /\</text>
-    <text x="60" y="115">  /  \_/  \</text>
-    <text x="70" y="150">  \       /</text>
-    <text x="80" y="185">   \_____/
-</text>
+
+  <!-- fox head -->
+  <g>
+    <!-- ears -->
+    <polygon points="85,35 122,74 78,92" fill="#FF8700"/>
+    <polygon points="215,35 178,74 222,92" fill="#FF8700"/>
+    <polygon points="95,52 118,76 88,88" fill="#C2410C"/>
+    <polygon points="205,52 182,76 212,88" fill="#C2410C"/>
+    <!-- face -->
+    <polygon points="78,92 122,74 150,94 178,74 222,92 206,142 150,178 94,142" fill="#FF8700"/>
+    <!-- muzzle -->
+    <polygon points="116,134 184,134 150,178" fill="#E0D1C7"/>
+    <!-- eyes -->
+    <circle cx="124" cy="114" r="7" fill="#17131A"/>
+    <circle cx="176" cy="114" r="7" fill="#17131A"/>
+    <!-- nose -->
+    <polygon points="142,140 158,140 150,154" fill="#17131A"/>
   </g>
-  <text x="300" y="100" fill="#FF8700" font-weight="bold" font-size="44" letter-spacing="14">KEKKAI</text>
-  <text x="304" y="135" fill="#8A7568" font-size="16">secure password vault · Argon2id + AES-256-GCM</text>
-  <text x="304" y="162" fill="#E0D1C7" font-size="13">TUI · TOTP · HIBP · themes · cross-platform</text>
+
+  <!-- wordmark -->
+  <text x="300" y="108" font-family="Segoe UI,Arial,Helvetica,sans-serif" font-size="46" font-weight="bold" letter-spacing="12" fill="#FF8700">KEKKAI</text>
+  <text x="304" y="142" font-family="Segoe UI,Arial,Helvetica,sans-serif" font-size="15" fill="#8A7568">secure password vault · Argon2id + AES-256-GCM</text>
+  <text x="304" y="168" font-family="JetBrains Mono,Cascadia Code,Consolas,monospace" font-size="13" fill="#E0D1C7">TUI · TOTP · HIBP · themes · cross-platform</text>
 </svg>
