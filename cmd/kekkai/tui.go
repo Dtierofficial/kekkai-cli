@@ -255,6 +255,21 @@ func hotkeyRune(r rune) rune {
 	return lower
 }
 
+// trimLastRune removes the last UTF-8 rune from b. A byte-level trim would
+// corrupt multibyte input: a Backspace in a Cyrillic master password could
+// leave a dangling byte, and the vault would then be saved with a password
+// the user can never retype - a permanent lockout.
+func trimLastRune(b []byte) []byte {
+	if len(b) == 0 {
+		return b
+	}
+	_, n := utf8.DecodeLastRune(b)
+	if n <= 0 || n > len(b) {
+		n = 1
+	}
+	return b[:len(b)-n]
+}
+
 func (m *tuiModel) key(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	if f := debugLog(); f != nil {
 		fmt.Fprintf(f, "%s key=%v runes=%q\n", time.Now().Format("15:04:05.000"), msg.Type, msg.Runes)
@@ -710,7 +725,7 @@ func (m *tuiModel) backspace() {
 		return
 	}
 	if m.field == 3 && len(m.totpSecret) > 0 {
-		m.totpSecret = m.totpSecret[:len(m.totpSecret)-1]
+		m.totpSecret = trimLastRune(m.totpSecret)
 	}
 }
 
@@ -767,7 +782,7 @@ func (m *tuiModel) settingsKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 	if msg.Type == tea.KeyBackspace && m.settingsField == 2 && len(m.newMaster) > 0 {
-		m.newMaster = m.newMaster[:len(m.newMaster)-1]
+		m.newMaster = trimLastRune(m.newMaster)
 		return m, nil
 	}
 	if msg.Type != tea.KeyEnter {
@@ -848,7 +863,11 @@ func (m *tuiModel) transferKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 	if msg.Type == tea.KeyBackspace && len(m.transferPath) > 0 {
-		m.transferPath = m.transferPath[:len(m.transferPath)-1]
+		_, n := utf8.DecodeLastRuneInString(m.transferPath)
+		if n <= 0 || n > len(m.transferPath) {
+			n = 1
+		}
+		m.transferPath = m.transferPath[:len(m.transferPath)-n]
 		return m, nil
 	}
 	if msg.Type == tea.KeyRunes {

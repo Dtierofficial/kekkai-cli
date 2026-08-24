@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 	"time"
+	"unicode/utf8"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"kekkai/vault"
@@ -299,6 +300,45 @@ func TestNulRuneDoesNotPoisonBuffers(t *testing.T) {
 	m2.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{0}})
 	if m2.service != "" {
 		t.Fatalf("NUL rune reached the service buffer: %q", m2.service)
+	}
+}
+
+// TestBackspaceTrimsWholeRunes guards the byte-trim lockout: Backspace in
+// the new-master field (and other multibyte inputs) must remove a whole
+// UTF-8 rune. Trimming half a Cyrillic character used to poison the master
+// password with a dangling byte and permanently lock the vault.
+func TestBackspaceTrimsWholeRunes(t *testing.T) {
+	m := &tuiModel{mode: modeSettings, settingsField: 2}
+	for _, r := range "пароль123" {
+		m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{r}})
+	}
+	m.Update(tea.KeyMsg{Type: tea.KeyBackspace})
+	m.Update(tea.KeyMsg{Type: tea.KeyBackspace})
+	m.Update(tea.KeyMsg{Type: tea.KeyBackspace})
+	if got := string(m.newMaster); got != "пароль" {
+		t.Fatalf("new master after backspaces = %q, want %q", got, "пароль")
+	}
+	if !utf8.Valid(m.newMaster) {
+		t.Fatalf("new master contains invalid UTF-8: %q", m.newMaster)
+	}
+
+	f := &tuiModel{mode: modeAdd, field: 3}
+	for _, r := range "секретJBSWY" {
+		f.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{r}})
+	}
+	f.Update(tea.KeyMsg{Type: tea.KeyBackspace})
+	if got := string(f.totpSecret); got != "секретJBSW" || !utf8.Valid(f.totpSecret) {
+		t.Fatalf("TOTP secret backspace corrupted input: %q", got)
+	}
+
+	p := &tuiModel{mode: modeImport}
+	typeRunes(p, "C:\\Дан\\vault.csv")
+	p.Update(tea.KeyMsg{Type: tea.KeyBackspace})
+	if got := p.transferPath; got != "C:\\Дан\\vault.cs" {
+		t.Fatalf("path backspace removed more than one rune: %q", got)
+	}
+	if !utf8.ValidString(p.transferPath) {
+		t.Fatalf("transfer path contains invalid UTF-8: %q", p.transferPath)
 	}
 }
 
