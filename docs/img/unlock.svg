@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="360" viewBox="0 0 820 360" font-family="JetBrains Mono,Cascadia Code,Consolas,'DejaVu Sans Mono',monospace">
+  <rect x="1" y="1" width="818" height="358" rx="10" fill="#17131A" stroke="#332a38"/>
+  <rect x="1" y="1" width="818" height="30" rx="10" fill="#211a24"/>
+  <rect x="2" y="22" width="817" height="9" fill="#211a24"/>
+  <circle cx="22" cy="16" r="6" fill="#FF5F56"/><circle cx="42" cy="16" r="6" fill="#FFBD2E"/><circle cx="62" cy="16" r="6" fill="#27C93F"/>
+  <text x="410" y="21" text-anchor="middle" font-size="12" fill="#8A7568">cmd — kekkai</text>
+  <g font-size="13.5" xml:space="preserve">
+    <text x="30" y="70" fill="#FF8700" font-weight="bold">   /\   /\</text>
+    <text x="30" y="89" fill="#FF8700" font-weight="bold">  /  \_/  \     K E K K A I</text>
+    <text x="30" y="108" fill="#FF8700" font-weight="bold">  \       /</text>
+    <text x="230" y="108" fill="#8A7568">secure password vault</text>
+    <text x="30" y="127" fill="#FF8700" font-weight="bold">   \_____/
+
+</text>
+    <text x="60" y="165" fill="#5A3A28">╭──────────────────────────────────────╮</text>
+    <text x="60" y="184" fill="#5A3A28">│</text><text x="452" y="184" fill="#5A3A28">│</text>
+    <text x="84" y="203" fill="#E0D1C7" font-weight="bold">UNLOCK VAULT</text><text x="452" y="203" fill="#5A3A28">│</text>
+    <text x="60" y="222" fill="#5A3A28">│</text><text x="452" y="222" fill="#5A3A28">│</text>
+    <text x="84" y="241"><tspan fill="#8A7568">Master password: </tspan><tspan fill="#E0D1C7">••••••••</tspan><tspan fill="#FF8700">_</tspan></text><text x="452" y="241" fill="#5A3A28">│</text>
+    <text x="60" y="260" fill="#5A3A28">│</text><text x="452" y="260" fill="#5A3A28">│</text>
+    <text x="84" y="279" fill="#8A7568">Enter unlocks · Esc quits</text><text x="452" y="279" fill="#5A3A28">│</text>
+    <text x="60" y="298" fill="#5A3A28">│</text><text x="452" y="298" fill="#5A3A28">│</text>
+    <text x="60" y="317" fill="#5A3A28">╰──────────────────────────────────────╯</text>
+    <text x="60" y="342" fill="#FF5F00">! Invalid master password</text>
+  </g>
+</svg>

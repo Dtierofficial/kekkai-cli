@@ -1,0 +1,19 @@
+# binaries
+*.exe
+keytest.exe
+dist/
+
+# local debug output
+*.log
+
+# editor / OS noise
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# never commit vault material or plaintext exports
+*.kek
+*.enc
+kekkai-export.csv
+kekkai-backup-*.enc

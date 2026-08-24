@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="520" viewBox="0 0 820 520" font-family="JetBrains Mono,Cascadia Code,Consolas,'DejaVu Sans Mono',monospace">
+  <rect x="1" y="1" width="818" height="518" rx="10" fill="#17131A" stroke="#332a38"/>
+  <rect x="1" y="1" width="818" height="30" rx="10" fill="#211a24"/>
+  <rect x="2" y="22" width="817" height="9" fill="#211a24"/>
+  <circle cx="22" cy="16" r="6" fill="#FF5F56"/><circle cx="42" cy="16" r="6" fill="#FFBD2E"/><circle cx="62" cy="16" r="6" fill="#27C93F"/>
+  <text x="410" y="21" text-anchor="middle" font-size="12" fill="#8A7568">cmd — kekkai</text>
+
+  <g font-size="13.5" xml:space="preserve">
+    <text x="30" y="70" fill="#FF8700" font-weight="bold">   /\   /\</text>
+    <text x="30" y="89" fill="#FF8700" font-weight="bold">  /  \_/  \     K E K K A I</text>
+    <text x="30" y="108" fill="#FF8700" font-weight="bold">  \       /</text>
+    <text x="230" y="108" fill="#8A7568">secure password vault</text>
+    <text x="30" y="127" fill="#FF8700" font-weight="bold">   \_____/
+
+</text>
+
+    <text x="50" y="170" fill="#5A3A28">╭──────────────────────────────────────────────╮</text>
+    <text x="74" y="192" fill="#E0D1C7" font-weight="bold">ADD NEW ENTRY</text><text x="50" y="211" fill="#5A3A28">│</text><text x="542" y="211" fill="#5A3A28">│</text>
+    <text x="74" y="233" fill="#8A7568">Tab/Enter advances · Esc cancels</text><text x="542" y="233" fill="#5A3A28">│</text>
+    <text x="50" y="255" fill="#5A3A28">│</text><text x="542" y="255" fill="#5A3A28">│</text>
+    <text x="50" y="277" fill="#5A3A28">╰──────────────────────────────────────────────╯</text>
+
+    <text x="50" y="310"><tspan fill="#E0D1C7">Service:  </tspan><tspan fill="#E0D1C7">github.com</tspan></text>
+    <text x="50" y="333"><tspan fill="#E0D1C7">Login:    </tspan><tspan fill="#E0D1C7">alice@github.com</tspan></text>
+    <text x="50" y="356"><tspan fill="#E0D1C7">Password: </tspan><tspan fill="#E0D1C7">******************</tspan><tspan fill="#FF8700">_</tspan></text>
+    <text x="50" y="379"><tspan fill="#E0D1C7">Strength: </tspan><tspan fill="#61D095" font-weight="bold">■■■■ STRONG</tspan></text>
+    <text x="50" y="402"><tspan fill="#E0D1C7">TOTP secret: </tspan></text>
+
+    <text x="50" y="440" fill="#8A7568">Ctrl+G generate password · Ctrl+H check HIBP · type TOTP secret in next field</text>
+    <text x="50" y="470" fill="#E0D1C7">Secure password generated</text>
+  </g>
+</svg>

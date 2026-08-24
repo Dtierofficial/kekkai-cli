@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="540" viewBox="0 0 880 540" font-family="JetBrains Mono,Cascadia Code,Consolas,'DejaVu Sans Mono',monospace">
+  <rect x="1" y="1" width="878" height="538" rx="10" fill="#17131A" stroke="#332a38"/>
+  <rect x="1" y="1" width="878" height="30" rx="10" fill="#211a24"/>
+  <rect x="2" y="22" width="877" height="9" fill="#211a24"/>
+  <circle cx="22" cy="16" r="6" fill="#FF5F56"/><circle cx="42" cy="16" r="6" fill="#FFBD2E"/><circle cx="62" cy="16" r="6" fill="#27C93F"/>
+  <text x="440" y="21" text-anchor="middle" font-size="12" fill="#8A7568">cmd — kekkai</text>
+
+  <g font-size="13.5" xml:space="preserve">
+    <text x="30" y="70" fill="#FF8700" font-weight="bold">   /\   /\</text>
+    <text x="30" y="89" fill="#FF8700" font-weight="bold">  /  \_/  \     K E K K A I</text>
+    <text x="30" y="108" fill="#FF8700" font-weight="bold">  \       /</text>
+    <text x="230" y="108" fill="#8A7568">secure password vault</text>
+    <text x="30" y="127" fill="#FF8700" font-weight="bold">   \_____/
+
+</text>
+
+    <!-- selected row highlight -->
+    <rect x="66" y="192" width="500" height="20" rx="3" fill="#FF8700"/>
+
+    <text x="50" y="168" fill="#5A3A28">╭───────────────────────────────────────────────────╮</text>
+    <text x="50" y="187" fill="#5A3A28">│</text><text x="574" y="187" fill="#5A3A28">│</text>
+    <text x="74" y="207" fill="#17131A" font-weight="bold">› github.com        alice@github</text><text x="574" y="207" fill="#5A3A28">│</text>
+    <text x="74" y="226" fill="#E0D1C7">gitlab.com</text><text x="215" y="226" fill="#8A7568">alice</text><text x="574" y="226" fill="#5A3A28">│</text>
+    <text x="74" y="245" fill="#E0D1C7">homelab</text><text x="215" y="245" fill="#8A7568">root</text><text x="574" y="245" fill="#5A3A28">│</text>
+    <text x="74" y="264" fill="#E0D1C7">bank.example</text><text x="215" y="264" fill="#8A7568">alice_1990</text><text x="574" y="264" fill="#5A3A28">│</text>
+    <text x="50" y="283" fill="#5A3A28">│</text><text x="574" y="283" fill="#5A3A28">│</text>
+    <text x="50" y="302" fill="#5A3A28">╰───────────────────────────────────────────────────╯</text>
+
+    <text x="50" y="334" fill="#5A3A28">╭──────────────────────────────────────╮</text>
+    <text x="74" y="353"><tspan fill="#E0D1C7">PASSWORD  </tspan><tspan fill="#FF5C5C">x9!vK2#pQ7$mW4zR5</tspan></text><text x="462" y="353" fill="#5A3A28">│</text>
+    <text x="50" y="372" fill="#5A3A28">╰──────────────────────────────────────╯</text>
+
+    <text x="30" y="412"><tspan fill="#FF8700" font-weight="bold">↑/↓</tspan><tspan fill="#8A7568"> navigate · </tspan><tspan fill="#FF8700" font-weight="bold">Enter</tspan><tspan fill="#8A7568"> reveal · </tspan><tspan fill="#FF8700" font-weight="bold">c</tspan><tspan fill="#8A7568"> copy pass · </tspan><tspan fill="#FF8700" font-weight="bold">u</tspan><tspan fill="#8A7568"> copy user · </tspan><tspan fill="#FF8700" font-weight="bold">t</tspan><tspan fill="#8A7568"> copy TOTP · </tspan><tspan fill="#FF8700" font-weight="bold">a</tspan><tspan fill="#8A7568"> add</tspan></text>
+    <text x="30" y="432"><tspan fill="#FF8700" font-weight="bold">e</tspan><tspan fill="#8A7568"> edit · </tspan><tspan fill="#FF8700" font-weight="bold">d</tspan><tspan fill="#8A7568"> delete · </tspan><tspan fill="#FF8700" font-weight="bold">/</tspan><tspan fill="#8A7568"> search · </tspan><tspan fill="#FF8700" font-weight="bold">s</tspan><tspan fill="#8A7568"> settings · </tspan><tspan fill="#FF8700" font-weight="bold">q</tspan><tspan fill="#8A7568"> quit</tspan></text>
+
+    <text x="30" y="462" fill="#E0D1C7">• Password copied; clipboard clears in 35s</text>
+    <text x="30" y="492" fill="#E0D1C7">SEARCH  </text><text x="110" y="492" fill="#FF8700" font-weight="bold">git_</text><text x="150" y="492" fill="#8A7568">type to filter · ↑/↓ navigate · Enter done · Esc clear</text>
+  </g>
+</svg>
