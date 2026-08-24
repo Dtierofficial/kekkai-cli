@@ -13,6 +13,10 @@ import (
 	"kekkai/vault"
 )
 
+// maxImportRows caps CSV imports so a huge or malicious file cannot exhaust
+// memory before the vault's own entry limit is enforced at save time.
+const maxImportRows = 10000
+
 func importCSV(path string, entries []vault.Entry) ([]vault.Entry, int, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -83,6 +87,9 @@ func importCSV(path string, entries []vault.Entry) ([]vault.Entry, int, error) {
 		}
 		entries = append(entries, entry)
 		count++
+		if len(entries) > maxImportRows {
+			return entries, count, errors.New("too many entries in CSV")
+		}
 	}
 	return entries, count, nil
 }

@@ -82,6 +82,8 @@ kekkai list
 kekkai delete github.com
 ```
 
+> `kekkai delete <service>` removes **every** entry for that service (all logins). In the TUI, `d` deletes only the selected entry.
+
 ## 🖥️ Keybindings
 
 ### Vault list
@@ -144,6 +146,7 @@ Open with `s`. Navigate with `↑`/`↓`, change with `Enter`:
 - Writes are **atomic**: temp file (mode 0600) + rename — a crash can't corrupt the vault
 - Plaintext secrets are **zeroed in memory** as soon as they're no longer needed
 - No telemetry, no network access except the optional HIBP check (k-anonymity: only a 5-char SHA-1 prefix is sent)
+- Copied secrets auto-clear after the configured delay — if you quit the app before the timer fires, the clipboard keeps the last secret
 
 ⚠️ **There is no recovery.** Lose the master password — lose the vault. The file is unreadable without it.
 

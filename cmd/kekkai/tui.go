@@ -279,6 +279,12 @@ func (m *tuiModel) key(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	if m.mode == modeList && (m.field != 0 || m.editing || len(m.newMaster) > 0) {
 		m.returnToList()
 	}
+	// Keep the cursor inside the entry slice: every list action below
+	// indexes m.entries[m.selected], so an out-of-range cursor would panic
+	// the whole manager.
+	if m.selected < 0 || m.selected >= len(m.entries) {
+		m.selected = 0
+	}
 	if m.searching {
 		switch msg.Type {
 		case tea.KeyEsc:
@@ -902,7 +908,11 @@ func (m *tuiModel) View() string {
 		return b.String() + panel.Render("Are you sure? This will export unencrypted passwords!\n\nPress 'y' to confirm / Esc to cancel") + "\n"
 	}
 	if m.mode == modeConfirmDelete {
-		confirm := fmt.Sprintf("Delete %q?\n\n%s confirm   %s cancel", m.entries[m.selected].Service, keyStyle.Render("y / Enter"), keyStyle.Render("n / Esc"))
+		name := ""
+		if m.selected >= 0 && m.selected < len(m.entries) {
+			name = m.entries[m.selected].Service
+		}
+		confirm := fmt.Sprintf("Delete %q?\n\n%s confirm   %s cancel", name, keyStyle.Render("y / Enter"), keyStyle.Render("n / Esc"))
 		return b.String() + panel.Render(confirm) + "\n"
 	}
 	var list strings.Builder
@@ -924,7 +934,7 @@ func (m *tuiModel) View() string {
 	} else if m.search != "" {
 		b.WriteString("\n" + soft.Render("FILTER  ") + fox.Render(m.search) + muted.Render("  / new search · Esc clear") + "\n")
 	}
-	if len(m.entries) > 0 && m.revealed {
+	if len(m.entries) > 0 && m.revealed && m.selected >= 0 && m.selected < len(m.entries) {
 		password := coral.Render(string(m.entries[m.selected].Password))
 		b.WriteString("\n" + panel.Render("PASSWORD  "+password))
 	}

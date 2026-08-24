@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -253,5 +254,64 @@ func TestImportForeignCSVFormat(t *testing.T) {
 	}
 	if len(m2.entries) != 2 {
 		t.Fatalf("failed import changed entries: %d", len(m2.entries))
+	}
+}
+
+// TestImportRejectsOversizedCSV ensures a CSV beyond the entry cap fails
+// with an error instead of exhausting memory.
+func TestImportRejectsOversizedCSV(t *testing.T) {
+	tmp := t.TempDir()
+	prevWd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(tmp); err != nil {
+		t.Fatal(err)
+	}
+	defer os.Chdir(prevWd)
+
+	var b strings.Builder
+	b.WriteString("name,username,password\n")
+	for i := 0; i < 10001; i++ {
+		b.WriteString("svc" + strconv.Itoa(i) + ",login,pass\n")
+	}
+	if err := os.WriteFile("huge.csv", []byte(b.String()), 0600); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(tmp, "vault.kek")
+	master := []byte("master-pass")
+	if err := vault.New(path, master); err != nil {
+		t.Fatal(err)
+	}
+
+	m := &tuiModel{path: path, master: append([]byte(nil), master...), entries: nil, mode: modeList}
+	driveToSettings(t, m, 4)
+	typeRunes(m, "huge.csv")
+	m.Update(tea.KeyMsg{Type: tea.KeyEnter})
+	if !strings.Contains(m.status, "too many entries") {
+		t.Fatalf("oversized CSV was not rejected: %q", m.status)
+	}
+	if len(m.entries) > 10000 {
+		t.Fatalf("entries beyond the cap were kept: %d", len(m.entries))
+	}
+}
+
+// TestListCursorClampsToEntries pins the panic guard: a stale cursor beyond
+// the entry slice must clamp instead of indexing out of range when list
+// hotkeys fire.
+func TestListCursorClampsToEntries(t *testing.T) {
+	m := &tuiModel{mode: modeList, selected: 7, entries: []vault.Entry{{Service: "only", Login: "u", Password: []byte("p")}}}
+	m.key(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'e'}})
+	if !m.editing || m.editIndex != 0 {
+		t.Fatalf("stale cursor broke the edit flow: editing=%v editIndex=%d", m.editing, m.editIndex)
+	}
+	if string(m.password) != "p" || m.service != "only" {
+		t.Fatalf("wrong entry loaded into the form: %q %q", m.service, m.password)
+	}
+	m.returnToList()
+	m.selected = 99
+	m.Update(tea.KeyMsg{Type: tea.KeyEnter}) // reveal must not panic
+	if !m.revealed {
+		t.Fatal("reveal stopped working after cursor clamp")
 	}
 }
