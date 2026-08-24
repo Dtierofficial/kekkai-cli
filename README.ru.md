@@ -132,7 +132,7 @@ kekkai delete github.com
 | Clipboard clear | 15s · 35s · 60s |
 | New master | введите новый мастер-пароль и нажмите `Enter` |
 | Theme | Fox Orange · Cyberpunk Neon · Dracula · Matrix Green · Deep Purple · Nordic Blue · Monochrome |
-| Import from CSV | объединение записей из CSV (Bitwarden-формат: `url`/`name`, `username`, `password`, опционально `totp`) |
+| Import from CSV | объединение записей из CSV: собственных экспортов kekkai (`service`) или файлов Bitwarden/Chrome (`url`/`name`, `username`, `password`, опционально `totp`) |
 | Export Backup (.enc) | зашифрованная переносимая резервная копия |
 | Export to CSV (Unsafe) | экспорт открытым текстом — используйте осторожно |
 

@@ -132,7 +132,7 @@ Open with `s`. Navigate with `↑`/`↓`, change with `Enter`:
 | Clipboard clear | 15s · 35s · 60s |
 | New master | type a new master password, `Enter` to apply |
 | Theme | Fox Orange · Cyberpunk Neon · Dracula · Matrix Green · Deep Purple · Nordic Blue · Monochrome |
-| Import from CSV | merge entries from a Bitwarden-style CSV (`url`/`name`, `username`, `password`, optional `totp`) |
+| Import from CSV | merge entries from a CSV: kekkai's own exports (`service`) or Bitwarden/Chrome-style files (`url`/`name`, `username`, `password`, optional `totp`) |
 | Export Backup (.enc) | encrypted portable backup |
 | Export to CSV (Unsafe) | plaintext export — use with care |
 

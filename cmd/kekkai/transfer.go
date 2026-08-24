@@ -28,12 +28,17 @@ func importCSV(path string, entries []vault.Entry) ([]vault.Entry, int, error) {
 	for i, h := range header {
 		cols[strings.ToLower(strings.TrimSpace(h))] = i
 	}
+	// "service" keeps kekkai's own exports importable, "url"/"name" accept
+	// Bitwarden- and Chrome-style CSV files.
 	serviceCol, okURL := cols["url"]
 	if !okURL {
 		serviceCol, okURL = cols["name"]
 	}
 	if !okURL {
-		return entries, 0, errors.New("CSV must contain url or name column")
+		serviceCol, okURL = cols["service"]
+	}
+	if !okURL {
+		return entries, 0, errors.New("CSV must contain url, name or service column")
 	}
 	loginCol, passCol := cols["username"], cols["password"]
 	if _, ok := cols["username"]; !ok {
