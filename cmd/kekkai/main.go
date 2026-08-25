@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"golang.org/x/term"
 	"kekkai/vault"
@@ -49,6 +51,11 @@ func run(args []string) error {
 			return errors.New("usage: kekkai delete <service>")
 		}
 		return remove(path, args[1])
+	case "import":
+		if len(args) != 2 {
+			return errors.New("usage: kekkai import <file.csv>")
+		}
+		return importCmd(path, args[1])
 	default:
 		return fmt.Errorf("unknown command %q", args[0])
 	}
@@ -131,6 +138,66 @@ func add(path, service, login string) error {
 		vault.Zero(entries[i].TotpSecret)
 	}
 	return err
+}
+
+// importCmd is the CLI entry point for CSV import. The master password is
+// always requested with hidden input - never as an argument, where it would
+// land in shell history and the process list.
+func importCmd(path, file string) error {
+	stored, master, err := load(path)
+	if err != nil {
+		return err
+	}
+	return runImport(path, file, stored, master, confirmYesNo)
+}
+
+// runImport parses the CSV, previews the new entries and only after an
+// explicit confirmation rewrites the vault. Any parse error leaves the
+// vault untouched.
+func runImport(path, file string, stored []vault.Entry, master []byte, confirm func(string) bool) error {
+	defer vault.Zero(master)
+	defer clearEntries(stored)
+
+	merged, _, err := importCSV(cleanTransferPath(file), stored)
+	if err != nil {
+		clearEntries(merged[len(stored):])
+		return err
+	}
+	added := merged[len(stored):]
+	if len(added) == 0 {
+		return errors.New("nothing to import: file is empty, or every row duplicates an existing entry")
+	}
+
+	fmt.Fprintf(os.Stderr, "Will add %d entries:\n", len(added))
+	for _, e := range added {
+		suffix := ""
+		if len(e.TotpSecret) > 0 {
+			suffix = "  (TOTP)"
+		}
+		// Services and logins only: passwords never touch the terminal.
+		fmt.Fprintf(os.Stderr, "  %s  %s%s\n", e.Service, e.Login, suffix)
+	}
+
+	if !confirm(fmt.Sprintf("Import %d entries into the vault? [y/N]: ", len(added))) {
+		clearEntries(added)
+		return errors.New("import cancelled; vault unchanged")
+	}
+	if err := vault.Save(path, master, merged); err != nil {
+		clearEntries(added)
+		return err
+	}
+	clearEntries(merged)
+	fmt.Fprintf(os.Stderr, "Imported %d entries. Delete the plaintext CSV now: %s\n", len(added), file)
+	return nil
+}
+
+// confirmYesNo reads a y/n answer from stdin. The default (anything but
+// y/yes) is "no".
+func confirmYesNo(prompt string) bool {
+	fmt.Fprint(os.Stderr, prompt)
+	line, _ := bufio.NewReader(os.Stdin).ReadString('\n')
+	line = strings.ToLower(strings.TrimSpace(line))
+	return line == "y" || line == "yes"
 }
 
 func get(path, service string) error {

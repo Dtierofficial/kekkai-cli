@@ -80,9 +80,12 @@ kekkai add github.com alice
 kekkai get github.com
 kekkai list
 kekkai delete github.com
+kekkai import passwords.csv
 ```
 
 > `kekkai delete <service>` удаляет **все** записи этого сервиса (все логины). В TUI клавиша `d` удаляет только выбранную запись.
+>
+> `kekkai import` запрашивает мастер-пароль (скрытый ввод), показывает список добавляемых записей — только сервисы и логины, без паролей — и требует явного подтверждения перед записью. Дубли (тот же сервис + логин) пропускаются. Принимает экспорты kekkai и CSV форматов Bitwarden/Chrome.
 
 ## 🖥️ Горячие клавиши
 

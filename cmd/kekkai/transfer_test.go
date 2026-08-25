@@ -266,6 +266,94 @@ func TestImportForeignCSVFormat(t *testing.T) {
 	}
 }
 
+// TestRunImportConfirmCancelAndDuplicates drives the CLI import flow with a
+// stubbed confirmation: accepted import merges and persists, cancellation
+// leaves the vault untouched, a repeated import finds nothing new, and a
+// quoted path is accepted.
+func TestRunImportConfirmCancelAndDuplicates(t *testing.T) {
+	tmp := t.TempDir()
+	prevWd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(tmp); err != nil {
+		t.Fatal(err)
+	}
+	defer os.Chdir(prevWd)
+
+	csvContent := "name,username,password,totp\n" +
+		"new1,alice,pw1,\n" +
+		"new2,bob,pw2,TOTPSECRET\n" +
+		"keep,me,ignored,\n" // duplicate of the existing entry
+	if err := os.WriteFile("in.csv", []byte(csvContent), 0600); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(tmp, "vault.kek")
+	master := []byte("master-pass")
+	if err := vault.New(path, master); err != nil {
+		t.Fatal(err)
+	}
+	if err := vault.Save(path, master, []vault.Entry{{Service: "keep", Login: "me", Password: []byte("keep-pw")}}); err != nil {
+		t.Fatal(err)
+	}
+
+	// Confirmed import: 2 new entries merged and persisted.
+	stored, err := vault.Load(path, master)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := runImport(path, "in.csv", stored, append([]byte(nil), master...), func(string) bool { return true }); err != nil {
+		t.Fatalf("confirmed import failed: %v", err)
+	}
+	reloaded, err := vault.Load(path, master)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(reloaded) != 3 {
+		t.Fatalf("vault has %d entries, want 3", len(reloaded))
+	}
+
+	// Cancelled import (fresh rows): vault untouched.
+	if err := os.WriteFile("in2.csv", []byte("name,username,password\nfresh,x,fresh-pw\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	stored, err = vault.Load(path, master)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = runImport(path, "in2.csv", stored, append([]byte(nil), master...), func(string) bool { return false })
+	if err == nil || !strings.Contains(err.Error(), "cancelled") {
+		t.Fatalf("expected cancellation error, got %v", err)
+	}
+	reloaded, err = vault.Load(path, master)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(reloaded) != 3 {
+		t.Fatalf("cancelled import changed the vault: %d entries", len(reloaded))
+	}
+
+	// Re-importing the same file: everything is a duplicate.
+	stored, err = vault.Load(path, master)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = runImport(path, "in.csv", stored, append([]byte(nil), master...), func(string) bool { return true })
+	if err == nil || !strings.Contains(err.Error(), "nothing to import") {
+		t.Fatalf("expected nothing-to-import, got %v", err)
+	}
+
+	// Quoted path (Copy as path) is accepted.
+	stored, err = vault.Load(path, master)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = runImport(path, `"in.csv"`, stored, append([]byte(nil), master...), func(string) bool { return true })
+	if err == nil || !strings.Contains(err.Error(), "nothing to import") {
+		t.Fatalf("quoted path was not accepted: %v", err)
+	}
+}
+
 // TestImportRejectsOversizedCSV ensures a CSV beyond the entry cap fails
 // with an error instead of exhausting memory.
 func TestImportRejectsOversizedCSV(t *testing.T) {

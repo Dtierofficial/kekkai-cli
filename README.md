@@ -80,9 +80,12 @@ kekkai add github.com alice
 kekkai get github.com
 kekkai list
 kekkai delete github.com
+kekkai import passwords.csv
 ```
 
 > `kekkai delete <service>` removes **every** entry for that service (all logins). In the TUI, `d` deletes only the selected entry.
+>
+> `kekkai import` asks for the master password (hidden input), previews the entries it is about to add — services and logins only, never passwords — and requires an explicit confirmation before writing. Duplicates (same service + login) are skipped. Accepts kekkai exports and Bitwarden/Chrome-style CSVs.
 
 ## 🖥️ Keybindings
 
