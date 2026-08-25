@@ -328,8 +328,8 @@ func (m *tuiModel) key(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			m.search += string(msg.Runes)
 			m.clampSelectedToVisible()
 			return m, nil
-		case tea.KeyUp, tea.KeyDown, tea.KeyCtrlC:
-			// Navigation and interrupt must never be trapped by the search
+		case tea.KeyUp, tea.KeyDown:
+			// Navigation must never be trapped by the search
 			// overlay: fall through to the shared list key handling below.
 		default:
 			return m, nil
