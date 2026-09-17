@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build binaries
+        run: |
+          set -eu
+          VERSION="${GITHUB_REF_NAME#v}"
+          LDFLAGS="-s -w -X main.version=${VERSION}"
+          mkdir -p dist
+          for target in \
+            "linux/amd64" \
+            "linux/arm64" \
+            "darwin/amd64" \
+            "darwin/arm64" \
+            "windows/amd64" \
+            "windows/arm64"; do
+            GOOS="${target%%/*}"
+            GOARCH="${target##*/}"
+            EXT=""
+            NAME="kekkai-${GOOS}-${GOARCH}"
+            if [ "$GOOS" = "windows" ]; then
+              EXT=".exe"
+              NAME="kekkai-${GOOS}-${GOARCH}.exe"
+            fi
+            CGO_ENABLED=0 GOOS="$GOOS" GOARCH="$GOARCH" \
+              go build -trimpath -ldflags "$LDFLAGS" -o "dist/$NAME" ./cmd/kekkai
+          done
+
+      - name: Generate SHA256SUMS.txt
+        run: |
+          cd dist
+          sha256sum kekkai-* > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$GITHUB_REF_NAME" \
+            --verify-tag \
+            --generate-notes

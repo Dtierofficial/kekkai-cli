@@ -150,6 +150,7 @@ Open with `s`. Navigate with `↑`/`↓`, change with `Enter`:
 - Plaintext secrets are **zeroed in memory** as soon as they're no longer needed
 - No telemetry, no network access except the optional HIBP check (k-anonymity: only a 5-char SHA-1 prefix is sent)
 - Copied secrets auto-clear after the configured delay — if you quit the app before the timer fires, the clipboard keeps the last secret
+- TOTP secrets are stored inside the same encrypted vault body as passwords — there is no separate derivation path per field
 
 ⚠️ **There is no recovery.** Lose the master password — lose the vault. The file is unreadable without it.
 
