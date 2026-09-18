@@ -13,7 +13,7 @@
   <a href="#-возможности"><img src="https://img.shields.io/badge/features-TOTP%20%7C%20HIBP%20%7C%20темы-orange" alt="features"/></a>
   <img src="https://img.shields.io/badge/crypto-Argon2id%20%2B%20AES--256--GCM-blue" alt="crypto"/>
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey" alt="platform"/>
-  <img src="https://img.shields.io/badge/go-1.22%2B-00ADD8?logo=go&logoColor=white" alt="go"/>
+  <img src="https://img.shields.io/badge/go-1.26%2B-00ADD8?logo=go&logoColor=white" alt="go"/>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="license"/></a>
 </p>
 
@@ -58,7 +58,7 @@ irm https://raw.githubusercontent.com/Dtierofficial/kekkai-cli/main/scripts/inst
 curl -fsSL https://raw.githubusercontent.com/Dtierofficial/kekkai-cli/main/scripts/install.sh | sh
 ```
 
-**Из исходников** (Go 1.22+):
+**Из исходников** (Go 1.26+):
 
 ```sh
 go install github.com/Dtierofficial/kekkai-cli/cmd/kekkai@latest
